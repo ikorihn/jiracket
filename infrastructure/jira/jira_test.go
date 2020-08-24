@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 )
 
-func setup() {
+func setup() (*http.ServeMux, *httptest.Server) {
 	// Test server
 	testMux := http.NewServeMux()
 	testServer := httptest.NewServer(testMux)

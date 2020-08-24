@@ -74,19 +74,7 @@ func (c *Client) NewRequestWithContext(ctx context.Context, method, urlStr strin
 	req.Header.Set("Content-Type", "application/json")
 
 	// Set authentication information
-	if c.Authentication.authType == authTypeSession {
-		// Set session cookie if there is one
-		if c.session != nil {
-			for _, cookie := range c.session.Cookies {
-				req.AddCookie(cookie)
-			}
-		}
-	} else if c.Authentication.authType == authTypeBasic {
-		// Set basic auth information
-		if c.Authentication.username != "" {
-			req.SetBasicAuth(c.Authentication.username, c.Authentication.password)
-		}
-	}
+	req.SetBasicAuth("user", "pass")
 
 	return req, nil
 

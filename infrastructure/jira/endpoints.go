@@ -1,6 +1,6 @@
 package jira
 
 const (
-	EndpointSearch = "/rest/api/latest/search"
-	EndpointIssues = "/rest/api/latest/issue/%s"
+	EndpointSearch = "/rest/api/2/search"
+	EndpointIssues = "/rest/api/2/issue/%s"
 )

@@ -16,7 +16,11 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/r57ty7/jiracket/jira"
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/r57ty7/jiracket/infrastructure/jira"
 	"github.com/spf13/cobra"
 )
 
@@ -48,10 +52,22 @@ func init() {
 }
 
 func runSearch(cmd *cobra.Command, args []string) {
-	jc := jira.NewJiraClient("")
-	err := jc.Search("")
+
+	client, err := jira.NewClient(nil, "https://jira.example.com")
 	if err != nil {
 		cmd.PrintErrf("%v\n", err)
+		os.Exit(1)
+	}
+
+	repo := jira.NewSearchRepository(client)
+
+	issues, err := repo.Search(context.Background(), "")
+	if err != nil {
+		cmd.PrintErrf("%v\n", err)
+	}
+
+	for _, v := range issues {
+		fmt.Printf("%v\n", v.TicketId)
 	}
 
 }
