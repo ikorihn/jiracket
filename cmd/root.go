@@ -17,25 +17,34 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	config  Config
+)
+
+type Config struct {
+	Jira JiraConfig `toml:"jira"`
+}
+
+type JiraConfig struct {
+	BaseURL  string `toml:"baseUrl"`
+	Username string `toml:"username"`
+	Password string `toml:"password"`
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "jiracket",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Wrap JIRA API and Bitbucket API",
+	Long:  `jiracket is a utility command for execute JIRA API and Bitbucket API.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -78,6 +87,7 @@ func initConfig() {
 		}
 
 		// Search config in home directory with name ".jiracket" (without extension).
+		viper.AddConfigPath(".")
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".jiracket")
 	}
@@ -87,5 +97,9 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+
+	if err := viper.Unmarshal(&config); err != nil {
+		fmt.Printf("Cannot unmarshal file: %v", err)
 	}
 }

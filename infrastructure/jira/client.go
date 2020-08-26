@@ -24,7 +24,7 @@ type Authentication struct {
 
 // NewClient create Client
 // if httpClient is not defined, http.DefaultClient is used
-func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
+func NewClient(httpClient *http.Client, baseURL string, username, password string) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
@@ -39,9 +39,12 @@ func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
 		return nil, err
 	}
 
+	auth := Authentication{username, password}
+
 	return &Client{
 		client:  httpClient,
 		baseURL: parsedBaseURL,
+		auth:    auth,
 	}, nil
 }
 
@@ -74,7 +77,7 @@ func (c *Client) NewRequestWithContext(ctx context.Context, method, urlStr strin
 	req.Header.Set("Content-Type", "application/json")
 
 	// Set authentication information
-	req.SetBasicAuth("user", "pass")
+	req.SetBasicAuth(c.auth.username, c.auth.password)
 
 	return req, nil
 

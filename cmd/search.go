@@ -53,7 +53,7 @@ func init() {
 
 func runSearch(cmd *cobra.Command, args []string) {
 
-	client, err := jira.NewClient(nil, "https://jira.example.com")
+	client, err := jira.NewClient(nil, config.Jira.BaseURL, config.Jira.Username, config.Jira.Password)
 	if err != nil {
 		cmd.PrintErrf("%v\n", err)
 		os.Exit(1)
