@@ -39,4 +39,8 @@ func Test_searchRepository_Search(t *testing.T) {
 		return
 	}
 
+	if len(issues) != 2 {
+		t.Errorf("Issues length is not match: %v", len(issues))
+	}
+
 }

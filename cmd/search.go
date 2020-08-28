@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/r57ty7/jiracket/infrastructure/jira"
 	"github.com/spf13/cobra"
@@ -37,6 +38,12 @@ to quickly create a Cobra application.`,
 	Run: runSearch,
 }
 
+var (
+	project   string
+	user      string
+	parameter []string
+)
+
 func init() {
 	rootCmd.AddCommand(searchCmd)
 
@@ -46,9 +53,9 @@ func init() {
 	// and all subcommands, e.g.:
 	// searchCmd.PersistentFlags().String("foo", "", "A help for foo")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// searchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	searchCmd.Flags().StringVarP(&project, "project", "p", "", "Project for search")
+	searchCmd.Flags().StringVarP(&user, "user", "u", "", "Assignee for search")
+	searchCmd.Flags().StringArrayVar(&parameter, "parameter", []string{}, "Optional parameter [key=value]")
 }
 
 func runSearch(cmd *cobra.Command, args []string) {
@@ -61,13 +68,24 @@ func runSearch(cmd *cobra.Command, args []string) {
 
 	repo := jira.NewSearchRepository(client)
 
-	issues, err := repo.Search(context.Background(), "")
+	param := make(map[string]string)
+	param["project"] = project
+	param["assignee"] = user
+
+	jql := make([]string, 0, len(param))
+	for k, v := range param {
+		jql = append(jql, fmt.Sprintf("%v = %v", k, v))
+	}
+
+	jql = append(jql, parameter...)
+
+	issues, err := repo.Search(context.Background(), strings.Join(jql, " AND "))
 	if err != nil {
 		cmd.PrintErrf("%v\n", err)
 	}
 
 	for _, v := range issues {
-		fmt.Printf("%v\n", v.TicketId)
+		fmt.Printf("%v\t%v\n", v.Key, v.Fields.Summary)
 	}
 
 }

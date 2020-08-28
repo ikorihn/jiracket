@@ -48,7 +48,7 @@ func (r *searchRepository) Search(ctx context.Context, jql string) ([]domain.Iss
 	searchResults := new(SearchResults)
 	_, err = r.client.Do(req, searchResults)
 	if err != nil {
-		return nil, err
+		return searchResults.Issues, err
 	}
 
 	return searchResults.Issues, nil

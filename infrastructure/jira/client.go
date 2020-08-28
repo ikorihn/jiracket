@@ -78,6 +78,7 @@ func (c *Client) NewRequestWithContext(ctx context.Context, method, urlStr strin
 
 	// Set authentication information
 	req.SetBasicAuth(c.auth.username, c.auth.password)
+	fmt.Printf("JIRA URL: %v\n", u.String())
 
 	return req, nil
 
